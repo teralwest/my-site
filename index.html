@@ -3,20 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="GitHub Pagesで公開している個人Webサイトです。プロフィール、制作物、学習メモ、活動内容をまとめています。">
-  <title>My Website | Portfolio</title>
+  <meta name="description" content="Three.jsで動きのある3D表現を取り入れた個人Webサイトです。文字が重力で落ちるように動き、カメラがゆっくり視点を変えます。">
+  <title>My Website | Gravity Typography</title>
   <style>
     :root {
-      --ink: #202124;
-      --muted: #60656f;
-      --paper: #fffdf8;
-      --line: #dedbd2;
-      --teal: #126b63;
-      --coral: #d95d39;
-      --gold: #e3a72f;
-      --green: #627d32;
-      --white: #ffffff;
-      --shadow: 0 18px 50px rgba(30, 34, 38, 0.12);
+      --ink: #f7efe3;
+      --muted: rgba(247, 239, 227, 0.72);
+      --line: rgba(247, 239, 227, 0.18);
+      --panel: rgba(16, 22, 28, 0.72);
+      --panel-strong: rgba(16, 22, 28, 0.9);
+      --cyan: #4cc9d8;
+      --coral: #ff6f59;
+      --gold: #f6bd60;
+      --green: #7bd88f;
+      --violet: #b8a1ff;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
     }
 
     * {
@@ -24,19 +25,34 @@
     }
 
     html {
+      min-height: 100%;
       scroll-behavior: smooth;
+      background: #10161c;
     }
 
     body {
+      min-height: 100%;
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--ink);
       background:
-        linear-gradient(90deg, rgba(18, 107, 99, 0.07) 1px, transparent 1px),
-        linear-gradient(rgba(18, 107, 99, 0.06) 1px, transparent 1px),
-        var(--paper);
-      background-size: 48px 48px;
-      line-height: 1.75;
+        linear-gradient(90deg, rgba(247, 239, 227, 0.04) 1px, transparent 1px),
+        linear-gradient(rgba(247, 239, 227, 0.035) 1px, transparent 1px),
+        #10161c;
+      background-size: 56px 56px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      background:
+        linear-gradient(135deg, rgba(76, 201, 216, 0.16), transparent 34%),
+        linear-gradient(315deg, rgba(255, 111, 89, 0.13), transparent 42%),
+        #10161c;
     }
 
     a {
@@ -44,42 +60,72 @@
       text-decoration: none;
     }
 
+    #gravity-stage {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    #gravity-stage canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .noise {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      opacity: 0.26;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 4px);
+      mix-blend-mode: soft-light;
+    }
+
     .site-header {
-      position: sticky;
+      position: fixed;
       top: 0;
-      z-index: 10;
-      border-bottom: 1px solid rgba(32, 33, 36, 0.1);
-      background: rgba(255, 253, 248, 0.92);
-      backdrop-filter: blur(18px);
+      left: 0;
+      right: 0;
+      z-index: 20;
+      border-bottom: 1px solid var(--line);
+      background: rgba(16, 22, 28, 0.62);
+      backdrop-filter: blur(20px);
     }
 
     .nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      max-width: 1120px;
+      width: min(1180px, calc(100% - 40px));
+      min-height: 72px;
       margin: 0 auto;
-      padding: 16px 24px;
       gap: 24px;
     }
 
     .brand {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      font-weight: 800;
+      gap: 12px;
+      font-weight: 900;
       letter-spacing: 0;
     }
 
     .brand-mark {
       display: grid;
-      width: 36px;
-      height: 36px;
+      width: 40px;
+      height: 40px;
       place-items: center;
+      border: 1px solid rgba(247, 239, 227, 0.44);
       border-radius: 8px;
-      color: var(--white);
-      background: var(--teal);
-      box-shadow: 6px 6px 0 var(--gold);
+      color: #10161c;
+      background: var(--gold);
+      box-shadow: 6px 6px 0 rgba(76, 201, 216, 0.7);
     }
 
     .nav-links {
@@ -90,51 +136,53 @@
     }
 
     .nav-links a {
+      border: 1px solid transparent;
       border-radius: 999px;
       padding: 8px 12px;
       color: var(--muted);
-      font-size: 0.92rem;
-      font-weight: 700;
+      font-size: 0.9rem;
+      font-weight: 800;
     }
 
     .nav-links a:hover {
-      color: var(--teal);
-      background: rgba(18, 107, 99, 0.1);
+      border-color: rgba(247, 239, 227, 0.28);
+      color: var(--ink);
+      background: rgba(247, 239, 227, 0.08);
     }
 
     main {
-      overflow: hidden;
+      position: relative;
+      z-index: 2;
     }
 
     .hero {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 72px 24px 48px;
+      display: grid;
+      min-height: 100svh;
+      align-items: end;
+      padding: 120px 20px 48px;
     }
 
-    .hero-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.04fr) minmax(320px, 0.96fr);
-      align-items: center;
-      gap: 48px;
+    .hero-inner {
+      width: min(1180px, 100%);
+      margin: 0 auto;
     }
 
     .eyebrow {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      margin: 0 0 18px;
-      color: var(--teal);
-      font-size: 0.82rem;
-      font-weight: 800;
-      letter-spacing: 0.08em;
+      gap: 10px;
+      margin: 0 0 20px;
+      color: var(--cyan);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
     }
 
     .eyebrow::before {
       content: "";
-      width: 34px;
-      height: 3px;
+      width: 44px;
+      height: 2px;
       background: var(--coral);
     }
 
@@ -146,177 +194,88 @@
     }
 
     h1 {
-      max-width: 760px;
-      margin-bottom: 22px;
-      font-size: clamp(2.6rem, 8vw, 5.7rem);
-      line-height: 1.02;
+      max-width: 980px;
+      margin-bottom: 24px;
+      font-size: clamp(3rem, 11vw, 8.6rem);
+      line-height: 0.94;
       letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    .hero-copy {
+      display: grid;
+      grid-template-columns: minmax(0, 0.86fr) minmax(260px, 0.36fr);
+      align-items: end;
+      gap: 28px;
     }
 
     .lead {
-      max-width: 680px;
-      margin-bottom: 30px;
-      color: #3f444d;
-      font-size: clamp(1.06rem, 2vw, 1.28rem);
+      max-width: 720px;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.25rem);
     }
 
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 32px;
-    }
-
-    .button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 46px;
-      border: 2px solid var(--ink);
-      border-radius: 8px;
-      padding: 10px 18px;
-      font-weight: 800;
-      box-shadow: 5px 5px 0 rgba(32, 33, 36, 0.18);
-      transition: transform 160ms ease, box-shadow 160ms ease;
-    }
-
-    .button:hover {
-      transform: translate(-2px, -2px);
-      box-shadow: 8px 8px 0 rgba(32, 33, 36, 0.18);
-    }
-
-    .button.primary {
-      color: var(--white);
-      background: var(--teal);
-    }
-
-    .button.secondary {
-      background: var(--white);
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      max-width: 640px;
-    }
-
-    .stat {
+    .status-panel {
       border: 1px solid var(--line);
       border-radius: 8px;
-      padding: 14px;
-      background: rgba(255, 255, 255, 0.7);
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 1.4rem;
-      line-height: 1.2;
-    }
-
-    .stat span {
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
-    .visual {
-      position: relative;
-      min-height: 520px;
-    }
-
-    .poster {
-      position: relative;
-      overflow: hidden;
-      min-height: 520px;
-      border: 2px solid var(--ink);
-      border-radius: 8px;
-      background:
-        radial-gradient(circle at 24% 24%, rgba(227, 167, 47, 0.95) 0 11%, transparent 12%),
-        radial-gradient(circle at 76% 18%, rgba(217, 93, 57, 0.88) 0 9%, transparent 10%),
-        linear-gradient(135deg, #ffffff 0 38%, #dbe8e5 38% 62%, #f2d48d 62% 100%);
+      padding: 18px;
+      background: var(--panel);
       box-shadow: var(--shadow);
     }
 
-    .poster::before {
-      content: "";
-      position: absolute;
-      inset: 28px;
-      border: 1px solid rgba(32, 33, 36, 0.3);
-      border-radius: 8px;
+    .status-panel dl {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px 14px;
+      margin: 0;
     }
 
-    .poster-title {
-      position: absolute;
-      left: 38px;
-      right: 38px;
-      bottom: 40px;
-      padding: 26px;
-      border: 2px solid var(--ink);
-      border-radius: 8px;
-      background: rgba(255, 253, 248, 0.92);
-    }
-
-    .poster-title strong {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 1.5rem;
-      line-height: 1.25;
-    }
-
-    .poster-title span {
+    .status-panel dt {
       color: var(--muted);
-    }
-
-    .floating-note {
-      position: absolute;
-      top: 36px;
-      right: -10px;
-      width: min(230px, 52vw);
-      border: 2px solid var(--ink);
-      border-radius: 8px;
-      padding: 18px;
-      background: var(--white);
-      box-shadow: 10px 10px 0 rgba(217, 93, 57, 0.22);
+      font-size: 0.78rem;
       font-weight: 800;
+      text-transform: uppercase;
     }
 
-    .shape {
-      position: absolute;
-      left: -28px;
-      bottom: 88px;
-      width: 120px;
-      height: 120px;
-      border: 2px solid var(--ink);
-      background: var(--green);
-      transform: rotate(-8deg);
+    .status-panel dd {
+      margin: 0;
+      font-weight: 900;
+      text-align: right;
     }
 
     .section {
-      padding: 74px 24px;
-    }
-
-    .section:nth-child(even) {
-      background: rgba(255, 255, 255, 0.72);
+      padding: 96px 20px;
     }
 
     .section-inner {
-      max-width: 1120px;
+      width: min(1180px, 100%);
       margin: 0 auto;
+    }
+
+    .glass-band {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: clamp(24px, 5vw, 44px);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
     }
 
     .section-heading {
       display: grid;
-      grid-template-columns: minmax(0, 0.8fr) minmax(260px, 0.7fr);
-      align-items: end;
+      grid-template-columns: minmax(0, 0.8fr) minmax(260px, 0.48fr);
       gap: 32px;
+      align-items: end;
       margin-bottom: 34px;
     }
 
     h2 {
       margin-bottom: 0;
-      font-size: clamp(2rem, 5vw, 3.4rem);
-      line-height: 1.08;
+      font-size: clamp(2.1rem, 5.6vw, 4.8rem);
+      line-height: 1;
       letter-spacing: 0;
+      text-wrap: balance;
     }
 
     .section-heading p {
@@ -324,246 +283,180 @@
       color: var(--muted);
     }
 
-    .about-layout {
+    .feature-grid {
       display: grid;
-      grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
-      gap: 26px;
-    }
-
-    .profile-panel {
-      border: 2px solid var(--ink);
-      border-radius: 8px;
-      padding: 28px;
-      background: var(--teal);
-      color: var(--white);
-      box-shadow: var(--shadow);
-    }
-
-    .profile-avatar {
-      display: grid;
-      width: 128px;
-      height: 128px;
-      margin-bottom: 24px;
-      place-items: center;
-      border: 2px solid var(--ink);
-      border-radius: 50%;
-      color: var(--ink);
-      background:
-        linear-gradient(135deg, transparent 47%, rgba(32, 33, 36, 0.16) 48% 52%, transparent 53%),
-        var(--gold);
-      font-size: 3rem;
-      font-weight: 900;
-    }
-
-    .profile-panel p {
-      margin-bottom: 0;
-      color: rgba(255, 255, 255, 0.88);
-    }
-
-    .detail-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 16px;
     }
 
-    .detail-card,
-    .work-card,
-    .note-card,
-    .contact-box {
+    .feature {
+      min-height: 220px;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: rgba(255, 255, 255, 0.88);
-      box-shadow: 0 10px 28px rgba(30, 34, 38, 0.08);
+      padding: 22px;
+      background: rgba(247, 239, 227, 0.06);
     }
 
-    .detail-card {
-      padding: 24px;
-    }
-
-    .icon {
-      display: grid;
-      width: 42px;
-      height: 42px;
-      margin-bottom: 14px;
+    .feature strong {
+      display: inline-grid;
+      width: 46px;
+      height: 46px;
+      margin-bottom: 22px;
       place-items: center;
       border-radius: 8px;
-      color: var(--white);
-      background: var(--coral);
+      color: #10161c;
+      background: var(--cyan);
       font-weight: 900;
     }
 
-    .detail-card:nth-child(2) .icon,
-    .note-card:nth-child(2) .note-tag {
+    .feature:nth-child(2) strong {
+      background: var(--coral);
+    }
+
+    .feature:nth-child(3) strong {
       background: var(--green);
     }
 
-    .detail-card:nth-child(3) .icon,
-    .note-card:nth-child(3) .note-tag {
-      background: var(--gold);
-      color: var(--ink);
+    .feature h3 {
+      margin-bottom: 10px;
+      font-size: 1.3rem;
+      line-height: 1.25;
     }
 
-    .detail-card:nth-child(4) .icon {
-      background: var(--teal);
-    }
-
-    h3 {
-      margin-bottom: 8px;
-      font-size: 1.25rem;
-      line-height: 1.35;
-    }
-
-    .detail-card p,
-    .work-card p,
-    .note-card p {
+    .feature p {
       margin-bottom: 0;
       color: var(--muted);
     }
 
-    .work-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-    }
-
-    .work-card {
-      overflow: hidden;
-    }
-
-    .work-visual {
-      display: grid;
-      min-height: 170px;
-      place-items: center;
-      border-bottom: 1px solid var(--line);
-      background:
-        linear-gradient(135deg, rgba(18, 107, 99, 0.18), transparent 48%),
-        #f5f1e7;
-    }
-
-    .work-visual svg {
-      width: min(74%, 210px);
-      height: auto;
-    }
-
-    .work-body {
-      padding: 22px;
-    }
-
-    .tag-list {
+    .ticker {
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 18px;
+      overflow: hidden;
+      border-block: 1px solid var(--line);
+      background: rgba(16, 22, 28, 0.86);
     }
 
-    .tag {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 4px 10px;
-      color: #4e535c;
-      background: #fbfaf6;
-      font-size: 0.82rem;
-      font-weight: 700;
+    .ticker-track {
+      display: flex;
+      min-width: 100%;
+      animation: marquee 32s linear infinite;
     }
 
-    .timeline {
-      display: grid;
-      gap: 16px;
-      counter-reset: step;
-    }
-
-    .timeline-item {
-      display: grid;
-      grid-template-columns: 72px minmax(0, 1fr);
-      gap: 18px;
-      align-items: start;
-    }
-
-    .timeline-item::before {
-      counter-increment: step;
-      content: "0" counter(step);
-      display: grid;
-      width: 64px;
-      height: 64px;
-      place-items: center;
-      border: 2px solid var(--ink);
-      border-radius: 8px;
-      background: var(--gold);
+    .ticker span {
+      padding: 18px 26px;
+      color: var(--ink);
+      font-size: clamp(1.2rem, 3vw, 2rem);
       font-weight: 900;
+      white-space: nowrap;
     }
 
-    .timeline-content {
-      border-left: 4px solid var(--teal);
-      padding: 4px 0 4px 22px;
+    .ticker span:nth-child(3n + 1) {
+      color: var(--gold);
     }
 
-    .timeline-content p {
-      margin-bottom: 0;
-      color: var(--muted);
+    .ticker span:nth-child(3n + 2) {
+      color: var(--cyan);
     }
 
-    .notes-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
+    .ticker span:nth-child(3n) {
+      color: var(--coral);
     }
 
-    .note-card {
-      padding: 24px;
+    @keyframes marquee {
+      to {
+        transform: translateX(-50%);
+      }
     }
 
-    .note-tag {
-      display: inline-flex;
-      margin-bottom: 18px;
-      border-radius: 999px;
-      padding: 5px 12px;
-      color: var(--white);
-      background: var(--coral);
-      font-size: 0.78rem;
-      font-weight: 900;
+    .contact {
+      padding-bottom: 120px;
     }
 
-    .contact-box {
+    .contact-panel {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
       align-items: center;
-      gap: 22px;
-      border: 2px solid var(--ink);
-      padding: 32px;
-      background:
-        linear-gradient(120deg, rgba(18, 107, 99, 0.12), rgba(227, 167, 47, 0.14)),
-        var(--white);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: clamp(24px, 5vw, 44px);
+      background: var(--panel-strong);
+      box-shadow: var(--shadow);
     }
 
-    .contact-box p {
+    .contact-panel p {
       margin-bottom: 0;
       color: var(--muted);
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      border: 1px solid rgba(247, 239, 227, 0.44);
+      border-radius: 8px;
+      padding: 11px 18px;
+      color: #10161c;
+      background: var(--gold);
+      font-weight: 900;
+      box-shadow: 6px 6px 0 rgba(76, 201, 216, 0.7);
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .button:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 9px 9px 0 rgba(76, 201, 216, 0.7);
     }
 
     .site-footer {
       border-top: 1px solid var(--line);
-      padding: 32px 24px;
-      background: #202124;
-      color: rgba(255, 255, 255, 0.78);
+      padding: 28px 20px;
+      color: var(--muted);
+      background: rgba(16, 22, 28, 0.9);
     }
 
     .footer-inner {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      max-width: 1120px;
+      width: min(1180px, 100%);
       margin: 0 auto;
       gap: 12px;
     }
 
     .footer-inner p {
-      margin-bottom: 0;
+      margin: 0;
     }
 
-    @media (max-width: 860px) {
+    .fallback {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 30;
+      display: none;
+      max-width: 320px;
+      border: 1px solid rgba(255, 111, 89, 0.55);
+      border-radius: 8px;
+      padding: 14px 16px;
+      color: var(--ink);
+      background: rgba(16, 22, 28, 0.92);
+      box-shadow: var(--shadow);
+      font-size: 0.9rem;
+    }
+
+    .fallback.is-visible {
+      display: block;
+    }
+
+    @media (max-width: 880px) {
+      .site-header {
+        position: absolute;
+      }
+
       .nav {
         align-items: flex-start;
         flex-direction: column;
+        padding: 16px 0;
       }
 
       .nav-links {
@@ -571,88 +464,66 @@
       }
 
       .hero {
-        padding-top: 44px;
+        min-height: 100svh;
+        padding-top: 168px;
       }
 
-      .hero-grid,
+      .hero-copy,
       .section-heading,
-      .about-layout,
-      .contact-box {
+      .contact-panel {
         grid-template-columns: 1fr;
       }
 
-      .visual,
-      .poster {
-        min-height: 420px;
+      .status-panel dd {
+        text-align: left;
       }
 
-      .work-grid,
-      .notes-grid {
+      .feature-grid {
         grid-template-columns: 1fr;
       }
     }
 
-    @media (max-width: 620px) {
-      .nav {
-        padding: 14px 18px;
+    @media (max-width: 560px) {
+      .nav,
+      .hero-inner,
+      .section-inner,
+      .footer-inner {
+        width: min(100% - 28px, 1180px);
       }
 
-      .hero,
+      .nav-links a {
+        padding: 7px 9px;
+        font-size: 0.82rem;
+      }
+
+      .hero {
+        padding-left: 0;
+        padding-right: 0;
+      }
+
       .section {
-        padding-left: 18px;
-        padding-right: 18px;
+        padding: 72px 0;
       }
 
-      .stats,
-      .detail-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .poster-title {
-        left: 22px;
-        right: 22px;
-        bottom: 24px;
-        padding: 20px;
-      }
-
-      .floating-note {
-        right: 14px;
-      }
-
-      .shape {
-        left: -18px;
-        width: 92px;
-        height: 92px;
-      }
-
-      .timeline-item {
-        grid-template-columns: 52px minmax(0, 1fr);
-        gap: 14px;
-      }
-
-      .timeline-item::before {
-        width: 48px;
-        height: 48px;
-      }
-
-      .contact-box {
-        padding: 24px;
+      .ticker span {
+        padding-inline: 18px;
       }
     }
   </style>
 </head>
 <body>
+  <div id="gravity-stage" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+
   <header class="site-header">
     <nav class="nav" aria-label="メインナビゲーション">
       <a class="brand" href="#top" aria-label="My Website トップへ">
-        <span class="brand-mark">M</span>
-        <span>My Website</span>
+        <span class="brand-mark">G</span>
+        <span>Gravity Type</span>
       </a>
       <div class="nav-links">
-        <a href="#about">About</a>
+        <a href="#scene">Scene</a>
         <a href="#works">Works</a>
-        <a href="#process">Process</a>
-        <a href="#notes">Notes</a>
         <a href="#contact">Contact</a>
       </div>
     </nav>
@@ -660,82 +531,67 @@
 
   <main id="top">
     <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-grid">
-        <div>
-          <p class="eyebrow">Personal Portfolio</p>
-          <h1 id="hero-title">つくること、学ぶこと、残すこと。</h1>
+      <div class="hero-inner">
+        <p class="eyebrow">Three.js Motion Portfolio</p>
+        <h1 id="hero-title">文字が落ちる。視点が巡る。</h1>
+        <div class="hero-copy">
           <p class="lead">
-            このサイトは、GitHub Pagesで公開している個人Webサイトです。
-            日々の学習、制作したもの、考えたことを整理しながら、少しずつ育てています。
+            GitHub Pagesで公開する個人サイトを、重力でタイポグラフィが降り注ぐ3D空間として再構成しました。
+            作品、学習、アイデアを、静的なページの中に動きのある展示として重ねています。
           </p>
-          <div class="actions">
-            <a class="button primary" href="#works">制作物を見る</a>
-            <a class="button secondary" href="#about">プロフィールへ</a>
-          </div>
-          <div class="stats" aria-label="サイトの概要">
-            <div class="stat">
-              <strong>01</strong>
-              <span>Portfolio</span>
-            </div>
-            <div class="stat">
-              <strong>02</strong>
-              <span>Learning Log</span>
-            </div>
-            <div class="stat">
-              <strong>03</strong>
-              <span>Ideas</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="visual" aria-label="サイトの雰囲気を表すビジュアル">
-          <div class="poster">
-            <div class="poster-title">
-              <strong>Creative Logbook</strong>
-              <span>小さな実験を公開しながら、次の制作につなげる場所。</span>
-            </div>
-          </div>
-          <div class="floating-note">HTML / CSS / GitHub Pages</div>
-          <div class="shape" aria-hidden="true"></div>
+          <aside class="status-panel" aria-label="サイトの表現要素">
+            <dl>
+              <dt>Engine</dt>
+              <dd>Three.js</dd>
+              <dt>Motion</dt>
+              <dd>Gravity</dd>
+              <dt>View</dt>
+              <dd>Moving Camera</dd>
+            </dl>
+          </aside>
         </div>
       </div>
     </section>
 
-    <section class="section" id="about" aria-labelledby="about-title">
+    <div class="ticker" aria-label="キーワード">
+      <div class="ticker-track">
+        <span>PORTFOLIO</span>
+        <span>LEARNING</span>
+        <span>DESIGN</span>
+        <span>CODING</span>
+        <span>IDEAS</span>
+        <span>GITHUB PAGES</span>
+        <span>PORTFOLIO</span>
+        <span>LEARNING</span>
+        <span>DESIGN</span>
+        <span>CODING</span>
+        <span>IDEAS</span>
+        <span>GITHUB PAGES</span>
+      </div>
+    </div>
+
+    <section class="section" id="scene" aria-labelledby="scene-title">
       <div class="section-inner">
-        <div class="section-heading">
-          <h2 id="about-title">About</h2>
-          <p>自分の関心領域と、これから伸ばしていきたいことをまとめています。</p>
-        </div>
-        <div class="about-layout">
-          <aside class="profile-panel">
-            <div class="profile-avatar" aria-hidden="true">M</div>
-            <h3>Webで表現する練習場</h3>
-            <p>
-              シンプルなHTMLから出発して、読みやすい情報設計、見た目の整え方、
-              公開までの流れを少しずつ身につけるためのサイトです。
-            </p>
-          </aside>
-          <div class="detail-grid">
-            <article class="detail-card">
-              <div class="icon">D</div>
-              <h3>Design</h3>
-              <p>配色、余白、文字組みを意識して、見やすく落ち着いたページを作ります。</p>
+        <div class="glass-band">
+          <div class="section-heading">
+            <h2 id="scene-title">Scene</h2>
+            <p>背景の3D空間では、言葉をテクスチャ化したオブジェクトを物理的に落下させ、床面で跳ね返るように動かしています。</p>
+          </div>
+          <div class="feature-grid">
+            <article class="feature">
+              <strong>01</strong>
+              <h3>重力のある文字</h3>
+              <p>キーワードが奥行きのある空間に出現し、速度と回転を持って落下します。</p>
             </article>
-            <article class="detail-card">
-              <div class="icon">C</div>
-              <h3>Coding</h3>
-              <p>HTMLとCSSを中心に、静的サイトとして扱いやすい構成を大切にします。</p>
+            <article class="feature">
+              <strong>02</strong>
+              <h3>動く画角</h3>
+              <p>カメラはゆっくり円を描き、スクロール量に応じて視線の高さも変わります。</p>
             </article>
-            <article class="detail-card">
-              <div class="icon">L</div>
-              <h3>Learning</h3>
-              <p>調べたこと、試したこと、つまずいたことを記録して次に活かします。</p>
-            </article>
-            <article class="detail-card">
-              <div class="icon">P</div>
-              <h3>Publishing</h3>
-              <p>GitHub Pagesを使い、変更を小さく積み上げながら公開していきます。</p>
+            <article class="feature">
+              <strong>03</strong>
+              <h3>公開しやすい構成</h3>
+              <p>HTML、CSS、JavaScriptを1ファイルにまとめ、GitHub Pagesへそのまま配置できます。</p>
             </article>
           </div>
         </div>
@@ -744,137 +600,40 @@
 
     <section class="section" id="works" aria-labelledby="works-title">
       <div class="section-inner">
-        <div class="section-heading">
-          <h2 id="works-title">Works</h2>
-          <p>制作物の置き場です。今後、学習成果や小さなアプリ、文章などを増やしていきます。</p>
-        </div>
-        <div class="work-grid">
-          <article class="work-card">
-            <div class="work-visual" aria-hidden="true">
-              <svg viewBox="0 0 260 150" role="img">
-                <rect x="18" y="18" width="224" height="114" rx="8" fill="#fffdf8" stroke="#202124" stroke-width="4"/>
-                <rect x="36" y="38" width="92" height="14" rx="4" fill="#126b63"/>
-                <rect x="36" y="66" width="164" height="10" rx="4" fill="#dedbd2"/>
-                <rect x="36" y="88" width="132" height="10" rx="4" fill="#dedbd2"/>
-                <circle cx="205" cy="49" r="18" fill="#e3a72f" stroke="#202124" stroke-width="4"/>
-              </svg>
-            </div>
-            <div class="work-body">
-              <h3>Portfolio Site</h3>
-              <p>このサイト自体を制作物として更新し、構成やデザインを改善していきます。</p>
-              <div class="tag-list">
-                <span class="tag">HTML</span>
-                <span class="tag">CSS</span>
-                <span class="tag">GitHub Pages</span>
-              </div>
-            </div>
-          </article>
-          <article class="work-card">
-            <div class="work-visual" aria-hidden="true">
-              <svg viewBox="0 0 260 150" role="img">
-                <rect x="28" y="20" width="204" height="110" rx="8" fill="#ffffff" stroke="#202124" stroke-width="4"/>
-                <path d="M52 100 L88 72 L118 90 L160 50 L208 96" fill="none" stroke="#d95d39" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="88" cy="72" r="8" fill="#126b63"/>
-                <circle cx="160" cy="50" r="8" fill="#e3a72f"/>
-              </svg>
-            </div>
-            <div class="work-body">
-              <h3>Learning Notes</h3>
-              <p>学習内容を見返しやすく整理し、自分用の知識ベースとして育てます。</p>
-              <div class="tag-list">
-                <span class="tag">Memo</span>
-                <span class="tag">Research</span>
-                <span class="tag">Archive</span>
-              </div>
-            </div>
-          </article>
-          <article class="work-card">
-            <div class="work-visual" aria-hidden="true">
-              <svg viewBox="0 0 260 150" role="img">
-                <rect x="38" y="26" width="184" height="98" rx="8" fill="#fffdf8" stroke="#202124" stroke-width="4"/>
-                <rect x="58" y="48" width="48" height="48" rx="8" fill="#627d32"/>
-                <rect x="120" y="48" width="82" height="10" rx="4" fill="#202124"/>
-                <rect x="120" y="72" width="64" height="10" rx="4" fill="#dedbd2"/>
-                <rect x="120" y="94" width="74" height="10" rx="4" fill="#dedbd2"/>
-              </svg>
-            </div>
-            <div class="work-body">
-              <h3>Small Experiments</h3>
-              <p>UI、レイアウト、ちょっとしたツールなどを小さく作って公開します。</p>
-              <div class="tag-list">
-                <span class="tag">UI</span>
-                <span class="tag">Prototype</span>
-                <span class="tag">Practice</span>
-              </div>
-            </div>
-          </article>
+        <div class="glass-band">
+          <div class="section-heading">
+            <h2 id="works-title">Works</h2>
+            <p>このサイトを制作物の起点として、今後は学習メモ、小さなアプリ、デザイン実験を追加していきます。</p>
+          </div>
+          <div class="feature-grid">
+            <article class="feature">
+              <strong>W</strong>
+              <h3>Web Site</h3>
+              <p>トップページそのものを改善しながら、表示、動き、情報設計の練習場にします。</p>
+            </article>
+            <article class="feature">
+              <strong>N</strong>
+              <h3>Notes</h3>
+              <p>調べたことやつまずいた点を短い文章で残し、次の制作に接続します。</p>
+            </article>
+            <article class="feature">
+              <strong>E</strong>
+              <h3>Experiments</h3>
+              <p>3D、アニメーション、レイアウトなど、小さな実験を公開可能な形に整えます。</p>
+            </article>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="section" id="process" aria-labelledby="process-title">
+    <section class="section contact" id="contact" aria-labelledby="contact-title">
       <div class="section-inner">
-        <div class="section-heading">
-          <h2 id="process-title">Process</h2>
-          <p>思いついたことを、そのまま終わらせず、公開できる形まで進めるための流れです。</p>
-        </div>
-        <div class="timeline">
-          <article class="timeline-item">
-            <div class="timeline-content">
-              <h3>テーマを決める</h3>
-              <p>作りたいもの、調べたいこと、改善したいページを小さく決めます。</p>
-            </div>
-          </article>
-          <article class="timeline-item">
-            <div class="timeline-content">
-              <h3>手を動かす</h3>
-              <p>HTMLとCSSから始め、必要に応じて画像、文章、構成を足していきます。</p>
-            </div>
-          </article>
-          <article class="timeline-item">
-            <div class="timeline-content">
-              <h3>公開して見直す</h3>
-              <p>GitHub Pagesに反映し、スマートフォンでも読みやすいか確認します。</p>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="notes" aria-labelledby="notes-title">
-      <div class="section-inner">
-        <div class="section-heading">
-          <h2 id="notes-title">Notes</h2>
-          <p>これから追加していきたい記事やメモの候補です。</p>
-        </div>
-        <div class="notes-grid">
-          <article class="note-card">
-            <span class="note-tag">HTML</span>
-            <h3>基本構造のメモ</h3>
-            <p>見出し、セクション、ナビゲーションなど、読みやすいHTMLの組み立て方。</p>
-          </article>
-          <article class="note-card">
-            <span class="note-tag">CSS</span>
-            <h3>余白と配色の記録</h3>
-            <p>ページ全体の雰囲気を整えるために試したCSSの考え方。</p>
-          </article>
-          <article class="note-card">
-            <span class="note-tag">Git</span>
-            <h3>公開までの手順</h3>
-            <p>変更、コミット、push、GitHub Pagesでの反映確認までの流れ。</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="contact" aria-labelledby="contact-title">
-      <div class="section-inner">
-        <div class="contact-box">
+        <div class="contact-panel">
           <div>
             <h2 id="contact-title">Contact</h2>
-            <p>連絡先やSNSリンクを追加すると、ポートフォリオとしてさらに使いやすくなります。</p>
+            <p>連絡先、SNS、GitHubプロフィールへのリンクを追加すると、ポートフォリオとしてさらに使いやすくなります。</p>
           </div>
-          <a class="button primary" href="#top">トップへ戻る</a>
+          <a class="button" href="#top">Top</a>
         </div>
       </div>
     </section>
@@ -882,9 +641,285 @@
 
   <footer class="site-footer">
     <div class="footer-inner">
-      <p>&copy; 2026 My Website</p>
-      <p>Built with HTML, CSS and GitHub Pages.</p>
+      <p>&copy; 2026 Gravity Type</p>
+      <p>Built with Three.js, HTML and CSS.</p>
     </div>
   </footer>
+
+  <p class="fallback" id="webgl-fallback">3D表示を初期化できませんでした。ブラウザのWebGL設定を確認してください。</p>
+
+  <script type="module">
+    import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
+
+    const stage = document.getElementById("gravity-stage");
+    const fallback = document.getElementById("webgl-fallback");
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const words = [
+      "CREATE", "LEARN", "BUILD", "IDEA", "DESIGN", "CODE", "PUBLISH", "THREE.JS",
+      "重力", "視点", "作品", "記録", "学習", "公開", "実験", "余白"
+    ];
+
+    const colors = [0x4cc9d8, 0xff6f59, 0xf6bd60, 0x7bd88f, 0xb8a1ff, 0xf7efe3];
+    const bodies = [];
+    const pointer = new THREE.Vector2();
+    const clock = new THREE.Clock();
+
+    let renderer;
+    let scene;
+    let camera;
+    let floor;
+    let spawnTimer = 0;
+
+    try {
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+        preserveDrawingBuffer: true,
+        powerPreference: "high-performance"
+      });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.8));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      stage.appendChild(renderer.domElement);
+
+      scene = new THREE.Scene();
+      scene.fog = new THREE.FogExp2(0x10161c, 0.033);
+
+      camera = new THREE.PerspectiveCamera(46, window.innerWidth / window.innerHeight, 0.1, 120);
+      camera.position.set(0, 7, 20);
+
+      createLights();
+      createWorld();
+      seedWords();
+      bindEvents();
+      animate();
+    } catch (error) {
+      fallback.classList.add("is-visible");
+      console.error(error);
+    }
+
+    function createLights() {
+      const ambient = new THREE.AmbientLight(0xffffff, 0.9);
+      scene.add(ambient);
+
+      const key = new THREE.DirectionalLight(0x9be7ff, 2.2);
+      key.position.set(-8, 14, 10);
+      scene.add(key);
+
+      const rim = new THREE.PointLight(0xff8068, 80, 38);
+      rim.position.set(9, 8, -9);
+      scene.add(rim);
+    }
+
+    function createWorld() {
+      const grid = new THREE.GridHelper(46, 46, 0x4cc9d8, 0x30404a);
+      grid.position.y = -5.2;
+      grid.material.transparent = true;
+      grid.material.opacity = 0.34;
+      scene.add(grid);
+
+      const floorGeometry = new THREE.PlaneGeometry(48, 48);
+      const floorMaterial = new THREE.MeshStandardMaterial({
+        color: 0x121a21,
+        roughness: 0.78,
+        metalness: 0.18,
+        transparent: true,
+        opacity: 0.72
+      });
+      floor = new THREE.Mesh(floorGeometry, floorMaterial);
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.y = -5.25;
+      scene.add(floor);
+
+      const railMaterial = new THREE.MeshStandardMaterial({
+        color: 0x4cc9d8,
+        emissive: 0x12343a,
+        roughness: 0.5,
+        metalness: 0.35
+      });
+
+      for (let i = 0; i < 18; i++) {
+        const bar = new THREE.Mesh(new THREE.BoxGeometry(0.04, 7.5, 0.04), railMaterial);
+        bar.position.set(-18 + i * 2.1, -1.5, -14);
+        bar.rotation.z = Math.sin(i) * 0.08;
+        scene.add(bar);
+      }
+
+      const ringMaterial = new THREE.MeshStandardMaterial({
+        color: 0xff6f59,
+        emissive: 0x30100d,
+        roughness: 0.62,
+        metalness: 0.16
+      });
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(7.8, 0.035, 16, 140), ringMaterial);
+      ring.position.set(0, 0.8, -9);
+      ring.rotation.x = Math.PI * 0.56;
+      scene.add(ring);
+    }
+
+    function seedWords() {
+      const initialCount = window.innerWidth < 620 ? 14 : 26;
+      for (let i = 0; i < initialCount; i++) {
+        spawnWord(Math.random() * 18 - 9, Math.random() * 13 - 1, Math.random() * -10 + 3);
+      }
+    }
+
+    function makeWordTexture(text, color) {
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+      const scale = 2;
+      canvas.width = 512 * scale;
+      canvas.height = 168 * scale;
+      context.scale(scale, scale);
+
+      context.clearRect(0, 0, 512, 168);
+      context.fillStyle = "rgba(16, 22, 28, 0.78)";
+      roundedRect(context, 10, 22, 492, 112, 18);
+      context.fill();
+
+      context.lineWidth = 3;
+      context.strokeStyle = color;
+      roundedRect(context, 10, 22, 492, 112, 18);
+      context.stroke();
+
+      context.fillStyle = "#f7efe3";
+      context.font = "900 54px system-ui, -apple-system, Segoe UI, sans-serif";
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.fillText(text, 256, 78, 448);
+
+      context.fillStyle = color;
+      context.fillRect(42, 124, 120, 8);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      return texture;
+    }
+
+    function roundedRect(context, x, y, width, height, radius) {
+      context.beginPath();
+      context.moveTo(x + radius, y);
+      context.arcTo(x + width, y, x + width, y + height, radius);
+      context.arcTo(x + width, y + height, x, y + height, radius);
+      context.arcTo(x, y + height, x, y, radius);
+      context.arcTo(x, y, x + width, y, radius);
+      context.closePath();
+    }
+
+    function spawnWord(x = randomRange(-7.5, 7.5), y = randomRange(8, 15), z = randomRange(-13, 5)) {
+      const text = words[Math.floor(Math.random() * words.length)];
+      const colorHex = colors[Math.floor(Math.random() * colors.length)];
+      const colorCss = `#${colorHex.toString(16).padStart(6, "0")}`;
+      const texture = makeWordTexture(text, colorCss);
+      const aspect = 512 / 168;
+      const height = randomRange(1.05, 1.55);
+      const material = new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true,
+        depthTest: true,
+        depthWrite: false
+      });
+      const mesh = new THREE.Sprite(material);
+
+      mesh.position.set(x, y, z);
+      mesh.scale.set(height * aspect, height, 1);
+      mesh.material.rotation = randomRange(-0.25, 0.25);
+      scene.add(mesh);
+
+      bodies.push({
+        mesh,
+        velocity: new THREE.Vector3(randomRange(-0.26, 0.26), randomRange(-0.3, 0.04), randomRange(-0.16, 0.16)),
+        spin: randomRange(-0.85, 0.85),
+        radius: height * 0.58,
+        life: 0
+      });
+
+      if (bodies.length > 34) {
+        const removed = bodies.shift();
+        removed.mesh.material.map.dispose();
+        removed.mesh.material.dispose();
+        scene.remove(removed.mesh);
+      }
+    }
+
+    function bindEvents() {
+      window.addEventListener("resize", resize);
+      window.addEventListener("pointermove", (event) => {
+        pointer.x = event.clientX / window.innerWidth - 0.5;
+        pointer.y = event.clientY / window.innerHeight - 0.5;
+      }, { passive: true });
+    }
+
+    function resize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.8));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function animate() {
+      const delta = Math.min(clock.getDelta(), 0.033);
+      const elapsed = clock.elapsedTime;
+      const motionScale = prefersReducedMotion ? 0.22 : 1;
+
+      spawnTimer += delta * motionScale;
+      if (spawnTimer > 0.9) {
+        spawnWord();
+        spawnTimer = 0;
+      }
+
+      updateBodies(delta, motionScale);
+      updateCamera(elapsed, motionScale);
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
+
+    function updateBodies(delta, motionScale) {
+      const gravity = -6.8 * motionScale;
+      const floorY = -4.72;
+
+      for (const body of bodies) {
+        body.life += delta;
+        body.velocity.y += gravity * delta;
+        body.velocity.x += Math.sin(body.life * 1.4 + body.mesh.position.z) * 0.018 * motionScale;
+        body.mesh.position.addScaledVector(body.velocity, delta);
+
+        body.mesh.material.rotation += body.spin * delta * motionScale;
+
+        if (body.mesh.position.y < floorY + body.radius) {
+          body.mesh.position.y = floorY + body.radius;
+          body.velocity.y = Math.abs(body.velocity.y) * randomRange(0.36, 0.62);
+          body.velocity.x *= 0.88;
+          body.velocity.z *= 0.88;
+          body.spin *= 0.82;
+        }
+
+        if (body.mesh.position.x > 10 || body.mesh.position.x < -10) {
+          body.velocity.x *= -0.72;
+        }
+
+        if (body.mesh.position.z > 7 || body.mesh.position.z < -17) {
+          body.velocity.z *= -0.72;
+        }
+      }
+    }
+
+    function updateCamera(elapsed, motionScale) {
+      const scrollProgress = document.documentElement.scrollTop / Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const orbit = elapsed * 0.16 * motionScale + scrollProgress * Math.PI * 0.9;
+      const radius = window.innerWidth < 720 ? 20 : 18;
+
+      camera.position.x = Math.sin(orbit) * radius + pointer.x * 2.5;
+      camera.position.y = 5.8 + Math.sin(elapsed * 0.3) * 1.2 - scrollProgress * 3.2 - pointer.y * 1.4;
+      camera.position.z = Math.cos(orbit) * radius + 4;
+      camera.lookAt(pointer.x * 2.4, -1.4 - scrollProgress * 2.4, -4);
+    }
+
+    function randomRange(min, max) {
+      return min + Math.random() * (max - min);
+    }
+  </script>
 </body>
 </html>
