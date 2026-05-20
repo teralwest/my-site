@@ -3,53 +3,888 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Website</title>
+  <meta name="description" content="GitHub Pagesで公開している個人Webサイトです。プロフィール、制作物、学習メモ、活動内容をまとめています。">
+  <title>My Website | Portfolio</title>
   <style>
+    :root {
+      --ink: #202124;
+      --muted: #60656f;
+      --paper: #fffdf8;
+      --line: #dedbd2;
+      --teal: #126b63;
+      --coral: #d95d39;
+      --gold: #e3a72f;
+      --green: #627d32;
+      --white: #ffffff;
+      --shadow: 0 18px 50px rgba(30, 34, 38, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: #222;
-      background: #f7f7f4;
-      line-height: 1.7;
-    }
-
-    main {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 72px 24px;
-    }
-
-    h1 {
-      margin: 0 0 16px;
-      font-size: clamp(2rem, 6vw, 3.5rem);
-      line-height: 1.15;
-    }
-
-    p {
-      margin: 0 0 16px;
-      font-size: 1.05rem;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(18, 107, 99, 0.07) 1px, transparent 1px),
+        linear-gradient(rgba(18, 107, 99, 0.06) 1px, transparent 1px),
+        var(--paper);
+      background-size: 48px 48px;
+      line-height: 1.75;
     }
 
     a {
-      color: #126b63;
+      color: inherit;
+      text-decoration: none;
     }
 
-    footer {
-      margin-top: 48px;
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(32, 33, 36, 0.1);
+      background: rgba(255, 253, 248, 0.92);
+      backdrop-filter: blur(18px);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      gap: 24px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      border-radius: 8px;
+      color: var(--white);
+      background: var(--teal);
+      box-shadow: 6px 6px 0 var(--gold);
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .nav-links a {
+      border-radius: 999px;
+      padding: 8px 12px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .nav-links a:hover {
+      color: var(--teal);
+      background: rgba(18, 107, 99, 0.1);
+    }
+
+    main {
+      overflow: hidden;
+    }
+
+    .hero {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 72px 24px 48px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.04fr) minmax(320px, 0.96fr);
+      align-items: center;
+      gap: 48px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 18px;
+      color: var(--teal);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 3px;
+      background: var(--coral);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 760px;
+      margin-bottom: 22px;
+      font-size: clamp(2.6rem, 8vw, 5.7rem);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 680px;
+      margin-bottom: 30px;
+      color: #3f444d;
+      font-size: clamp(1.06rem, 2vw, 1.28rem);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      border: 2px solid var(--ink);
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-weight: 800;
+      box-shadow: 5px 5px 0 rgba(32, 33, 36, 0.18);
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .button:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 8px 8px 0 rgba(32, 33, 36, 0.18);
+    }
+
+    .button.primary {
+      color: var(--white);
+      background: var(--teal);
+    }
+
+    .button.secondary {
+      background: var(--white);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      max-width: 640px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.4rem;
+      line-height: 1.2;
+    }
+
+    .stat span {
+      color: var(--muted);
       font-size: 0.9rem;
-      color: #666;
+    }
+
+    .visual {
+      position: relative;
+      min-height: 520px;
+    }
+
+    .poster {
+      position: relative;
+      overflow: hidden;
+      min-height: 520px;
+      border: 2px solid var(--ink);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 24% 24%, rgba(227, 167, 47, 0.95) 0 11%, transparent 12%),
+        radial-gradient(circle at 76% 18%, rgba(217, 93, 57, 0.88) 0 9%, transparent 10%),
+        linear-gradient(135deg, #ffffff 0 38%, #dbe8e5 38% 62%, #f2d48d 62% 100%);
+      box-shadow: var(--shadow);
+    }
+
+    .poster::before {
+      content: "";
+      position: absolute;
+      inset: 28px;
+      border: 1px solid rgba(32, 33, 36, 0.3);
+      border-radius: 8px;
+    }
+
+    .poster-title {
+      position: absolute;
+      left: 38px;
+      right: 38px;
+      bottom: 40px;
+      padding: 26px;
+      border: 2px solid var(--ink);
+      border-radius: 8px;
+      background: rgba(255, 253, 248, 0.92);
+    }
+
+    .poster-title strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1.5rem;
+      line-height: 1.25;
+    }
+
+    .poster-title span {
+      color: var(--muted);
+    }
+
+    .floating-note {
+      position: absolute;
+      top: 36px;
+      right: -10px;
+      width: min(230px, 52vw);
+      border: 2px solid var(--ink);
+      border-radius: 8px;
+      padding: 18px;
+      background: var(--white);
+      box-shadow: 10px 10px 0 rgba(217, 93, 57, 0.22);
+      font-weight: 800;
+    }
+
+    .shape {
+      position: absolute;
+      left: -28px;
+      bottom: 88px;
+      width: 120px;
+      height: 120px;
+      border: 2px solid var(--ink);
+      background: var(--green);
+      transform: rotate(-8deg);
+    }
+
+    .section {
+      padding: 74px 24px;
+    }
+
+    .section:nth-child(even) {
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .section-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: minmax(0, 0.8fr) minmax(260px, 0.7fr);
+      align-items: end;
+      gap: 32px;
+      margin-bottom: 34px;
+    }
+
+    h2 {
+      margin-bottom: 0;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .section-heading p {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .about-layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
+      gap: 26px;
+    }
+
+    .profile-panel {
+      border: 2px solid var(--ink);
+      border-radius: 8px;
+      padding: 28px;
+      background: var(--teal);
+      color: var(--white);
+      box-shadow: var(--shadow);
+    }
+
+    .profile-avatar {
+      display: grid;
+      width: 128px;
+      height: 128px;
+      margin-bottom: 24px;
+      place-items: center;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      color: var(--ink);
+      background:
+        linear-gradient(135deg, transparent 47%, rgba(32, 33, 36, 0.16) 48% 52%, transparent 53%),
+        var(--gold);
+      font-size: 3rem;
+      font-weight: 900;
+    }
+
+    .profile-panel p {
+      margin-bottom: 0;
+      color: rgba(255, 255, 255, 0.88);
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .detail-card,
+    .work-card,
+    .note-card,
+    .contact-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 10px 28px rgba(30, 34, 38, 0.08);
+    }
+
+    .detail-card {
+      padding: 24px;
+    }
+
+    .icon {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      margin-bottom: 14px;
+      place-items: center;
+      border-radius: 8px;
+      color: var(--white);
+      background: var(--coral);
+      font-weight: 900;
+    }
+
+    .detail-card:nth-child(2) .icon,
+    .note-card:nth-child(2) .note-tag {
+      background: var(--green);
+    }
+
+    .detail-card:nth-child(3) .icon,
+    .note-card:nth-child(3) .note-tag {
+      background: var(--gold);
+      color: var(--ink);
+    }
+
+    .detail-card:nth-child(4) .icon {
+      background: var(--teal);
+    }
+
+    h3 {
+      margin-bottom: 8px;
+      font-size: 1.25rem;
+      line-height: 1.35;
+    }
+
+    .detail-card p,
+    .work-card p,
+    .note-card p {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .work-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .work-card {
+      overflow: hidden;
+    }
+
+    .work-visual {
+      display: grid;
+      min-height: 170px;
+      place-items: center;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(135deg, rgba(18, 107, 99, 0.18), transparent 48%),
+        #f5f1e7;
+    }
+
+    .work-visual svg {
+      width: min(74%, 210px);
+      height: auto;
+    }
+
+    .work-body {
+      padding: 22px;
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .tag {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 10px;
+      color: #4e535c;
+      background: #fbfaf6;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 16px;
+      counter-reset: step;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .timeline-item::before {
+      counter-increment: step;
+      content: "0" counter(step);
+      display: grid;
+      width: 64px;
+      height: 64px;
+      place-items: center;
+      border: 2px solid var(--ink);
+      border-radius: 8px;
+      background: var(--gold);
+      font-weight: 900;
+    }
+
+    .timeline-content {
+      border-left: 4px solid var(--teal);
+      padding: 4px 0 4px 22px;
+    }
+
+    .timeline-content p {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .note-card {
+      padding: 24px;
+    }
+
+    .note-tag {
+      display: inline-flex;
+      margin-bottom: 18px;
+      border-radius: 999px;
+      padding: 5px 12px;
+      color: var(--white);
+      background: var(--coral);
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .contact-box {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 22px;
+      border: 2px solid var(--ink);
+      padding: 32px;
+      background:
+        linear-gradient(120deg, rgba(18, 107, 99, 0.12), rgba(227, 167, 47, 0.14)),
+        var(--white);
+    }
+
+    .contact-box p {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .site-footer {
+      border-top: 1px solid var(--line);
+      padding: 32px 24px;
+      background: #202124;
+      color: rgba(255, 255, 255, 0.78);
+    }
+
+    .footer-inner {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      max-width: 1120px;
+      margin: 0 auto;
+      gap: 12px;
+    }
+
+    .footer-inner p {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 860px) {
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav-links {
+        justify-content: flex-start;
+      }
+
+      .hero {
+        padding-top: 44px;
+      }
+
+      .hero-grid,
+      .section-heading,
+      .about-layout,
+      .contact-box {
+        grid-template-columns: 1fr;
+      }
+
+      .visual,
+      .poster {
+        min-height: 420px;
+      }
+
+      .work-grid,
+      .notes-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .nav {
+        padding: 14px 18px;
+      }
+
+      .hero,
+      .section {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .stats,
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .poster-title {
+        left: 22px;
+        right: 22px;
+        bottom: 24px;
+        padding: 20px;
+      }
+
+      .floating-note {
+        right: 14px;
+      }
+
+      .shape {
+        left: -18px;
+        width: 92px;
+        height: 92px;
+      }
+
+      .timeline-item {
+        grid-template-columns: 52px minmax(0, 1fr);
+        gap: 14px;
+      }
+
+      .timeline-item::before {
+        width: 48px;
+        height: 48px;
+      }
+
+      .contact-box {
+        padding: 24px;
+      }
     }
   </style>
 </head>
 <body>
-  <main>
-    <h1>My Website</h1>
-    <p>こんにちは。ここはGitHub Pagesで公開している自分のWebサイトです。</p>
-    <p>これからプロフィール、作品、メモなどを少しずつ追加していきます。</p>
+  <header class="site-header">
+    <nav class="nav" aria-label="メインナビゲーション">
+      <a class="brand" href="#top" aria-label="My Website トップへ">
+        <span class="brand-mark">M</span>
+        <span>My Website</span>
+      </a>
+      <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#works">Works</a>
+        <a href="#process">Process</a>
+        <a href="#notes">Notes</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
+  </header>
 
-    <footer>
-      <p>&copy; 2026 My Website</p>
-    </footer>
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow">Personal Portfolio</p>
+          <h1 id="hero-title">つくること、学ぶこと、残すこと。</h1>
+          <p class="lead">
+            このサイトは、GitHub Pagesで公開している個人Webサイトです。
+            日々の学習、制作したもの、考えたことを整理しながら、少しずつ育てています。
+          </p>
+          <div class="actions">
+            <a class="button primary" href="#works">制作物を見る</a>
+            <a class="button secondary" href="#about">プロフィールへ</a>
+          </div>
+          <div class="stats" aria-label="サイトの概要">
+            <div class="stat">
+              <strong>01</strong>
+              <span>Portfolio</span>
+            </div>
+            <div class="stat">
+              <strong>02</strong>
+              <span>Learning Log</span>
+            </div>
+            <div class="stat">
+              <strong>03</strong>
+              <span>Ideas</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="visual" aria-label="サイトの雰囲気を表すビジュアル">
+          <div class="poster">
+            <div class="poster-title">
+              <strong>Creative Logbook</strong>
+              <span>小さな実験を公開しながら、次の制作につなげる場所。</span>
+            </div>
+          </div>
+          <div class="floating-note">HTML / CSS / GitHub Pages</div>
+          <div class="shape" aria-hidden="true"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="about" aria-labelledby="about-title">
+      <div class="section-inner">
+        <div class="section-heading">
+          <h2 id="about-title">About</h2>
+          <p>自分の関心領域と、これから伸ばしていきたいことをまとめています。</p>
+        </div>
+        <div class="about-layout">
+          <aside class="profile-panel">
+            <div class="profile-avatar" aria-hidden="true">M</div>
+            <h3>Webで表現する練習場</h3>
+            <p>
+              シンプルなHTMLから出発して、読みやすい情報設計、見た目の整え方、
+              公開までの流れを少しずつ身につけるためのサイトです。
+            </p>
+          </aside>
+          <div class="detail-grid">
+            <article class="detail-card">
+              <div class="icon">D</div>
+              <h3>Design</h3>
+              <p>配色、余白、文字組みを意識して、見やすく落ち着いたページを作ります。</p>
+            </article>
+            <article class="detail-card">
+              <div class="icon">C</div>
+              <h3>Coding</h3>
+              <p>HTMLとCSSを中心に、静的サイトとして扱いやすい構成を大切にします。</p>
+            </article>
+            <article class="detail-card">
+              <div class="icon">L</div>
+              <h3>Learning</h3>
+              <p>調べたこと、試したこと、つまずいたことを記録して次に活かします。</p>
+            </article>
+            <article class="detail-card">
+              <div class="icon">P</div>
+              <h3>Publishing</h3>
+              <p>GitHub Pagesを使い、変更を小さく積み上げながら公開していきます。</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="works" aria-labelledby="works-title">
+      <div class="section-inner">
+        <div class="section-heading">
+          <h2 id="works-title">Works</h2>
+          <p>制作物の置き場です。今後、学習成果や小さなアプリ、文章などを増やしていきます。</p>
+        </div>
+        <div class="work-grid">
+          <article class="work-card">
+            <div class="work-visual" aria-hidden="true">
+              <svg viewBox="0 0 260 150" role="img">
+                <rect x="18" y="18" width="224" height="114" rx="8" fill="#fffdf8" stroke="#202124" stroke-width="4"/>
+                <rect x="36" y="38" width="92" height="14" rx="4" fill="#126b63"/>
+                <rect x="36" y="66" width="164" height="10" rx="4" fill="#dedbd2"/>
+                <rect x="36" y="88" width="132" height="10" rx="4" fill="#dedbd2"/>
+                <circle cx="205" cy="49" r="18" fill="#e3a72f" stroke="#202124" stroke-width="4"/>
+              </svg>
+            </div>
+            <div class="work-body">
+              <h3>Portfolio Site</h3>
+              <p>このサイト自体を制作物として更新し、構成やデザインを改善していきます。</p>
+              <div class="tag-list">
+                <span class="tag">HTML</span>
+                <span class="tag">CSS</span>
+                <span class="tag">GitHub Pages</span>
+              </div>
+            </div>
+          </article>
+          <article class="work-card">
+            <div class="work-visual" aria-hidden="true">
+              <svg viewBox="0 0 260 150" role="img">
+                <rect x="28" y="20" width="204" height="110" rx="8" fill="#ffffff" stroke="#202124" stroke-width="4"/>
+                <path d="M52 100 L88 72 L118 90 L160 50 L208 96" fill="none" stroke="#d95d39" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="88" cy="72" r="8" fill="#126b63"/>
+                <circle cx="160" cy="50" r="8" fill="#e3a72f"/>
+              </svg>
+            </div>
+            <div class="work-body">
+              <h3>Learning Notes</h3>
+              <p>学習内容を見返しやすく整理し、自分用の知識ベースとして育てます。</p>
+              <div class="tag-list">
+                <span class="tag">Memo</span>
+                <span class="tag">Research</span>
+                <span class="tag">Archive</span>
+              </div>
+            </div>
+          </article>
+          <article class="work-card">
+            <div class="work-visual" aria-hidden="true">
+              <svg viewBox="0 0 260 150" role="img">
+                <rect x="38" y="26" width="184" height="98" rx="8" fill="#fffdf8" stroke="#202124" stroke-width="4"/>
+                <rect x="58" y="48" width="48" height="48" rx="8" fill="#627d32"/>
+                <rect x="120" y="48" width="82" height="10" rx="4" fill="#202124"/>
+                <rect x="120" y="72" width="64" height="10" rx="4" fill="#dedbd2"/>
+                <rect x="120" y="94" width="74" height="10" rx="4" fill="#dedbd2"/>
+              </svg>
+            </div>
+            <div class="work-body">
+              <h3>Small Experiments</h3>
+              <p>UI、レイアウト、ちょっとしたツールなどを小さく作って公開します。</p>
+              <div class="tag-list">
+                <span class="tag">UI</span>
+                <span class="tag">Prototype</span>
+                <span class="tag">Practice</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="process" aria-labelledby="process-title">
+      <div class="section-inner">
+        <div class="section-heading">
+          <h2 id="process-title">Process</h2>
+          <p>思いついたことを、そのまま終わらせず、公開できる形まで進めるための流れです。</p>
+        </div>
+        <div class="timeline">
+          <article class="timeline-item">
+            <div class="timeline-content">
+              <h3>テーマを決める</h3>
+              <p>作りたいもの、調べたいこと、改善したいページを小さく決めます。</p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <div class="timeline-content">
+              <h3>手を動かす</h3>
+              <p>HTMLとCSSから始め、必要に応じて画像、文章、構成を足していきます。</p>
+            </div>
+          </article>
+          <article class="timeline-item">
+            <div class="timeline-content">
+              <h3>公開して見直す</h3>
+              <p>GitHub Pagesに反映し、スマートフォンでも読みやすいか確認します。</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="notes" aria-labelledby="notes-title">
+      <div class="section-inner">
+        <div class="section-heading">
+          <h2 id="notes-title">Notes</h2>
+          <p>これから追加していきたい記事やメモの候補です。</p>
+        </div>
+        <div class="notes-grid">
+          <article class="note-card">
+            <span class="note-tag">HTML</span>
+            <h3>基本構造のメモ</h3>
+            <p>見出し、セクション、ナビゲーションなど、読みやすいHTMLの組み立て方。</p>
+          </article>
+          <article class="note-card">
+            <span class="note-tag">CSS</span>
+            <h3>余白と配色の記録</h3>
+            <p>ページ全体の雰囲気を整えるために試したCSSの考え方。</p>
+          </article>
+          <article class="note-card">
+            <span class="note-tag">Git</span>
+            <h3>公開までの手順</h3>
+            <p>変更、コミット、push、GitHub Pagesでの反映確認までの流れ。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="contact" aria-labelledby="contact-title">
+      <div class="section-inner">
+        <div class="contact-box">
+          <div>
+            <h2 id="contact-title">Contact</h2>
+            <p>連絡先やSNSリンクを追加すると、ポートフォリオとしてさらに使いやすくなります。</p>
+          </div>
+          <a class="button primary" href="#top">トップへ戻る</a>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>&copy; 2026 My Website</p>
+      <p>Built with HTML, CSS and GitHub Pages.</p>
+    </div>
+  </footer>
 </body>
 </html>
